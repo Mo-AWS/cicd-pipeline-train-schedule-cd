@@ -1,4 +1,4 @@
-pipeline {
+npipeline {
     agent any
     stages {
         stage('Build') {
@@ -14,7 +14,7 @@ pipeline {
                 branch 'master'
             }
             steps {
-                withCredentials([usernamePassword(credentialsId: 'webserver_login', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'webserver_login', usernameVariable: 'deploy', passwordVariable: 'jenkins')]) {
                     sshPublisher(
                         failOnError: true,
                         continueOnError: false,
@@ -22,8 +22,8 @@ pipeline {
                             sshPublisherDesc(
                                 configName: 'staging',
                                 sshCredentials: [
-                                    username: "$USERNAME",
-                                    encryptedPassphrase: "$USERPASS"
+                                    username: "deploy",
+                                    encryptedPassphrase: "jenkins"
                                 ], 
                                 transfers: [
                                     sshTransfer(
@@ -46,7 +46,7 @@ pipeline {
             steps {
                 input 'Does the staging environment look OK?'
                 milestone(1)
-                withCredentials([usernamePassword(credentialsId: 'webserver_login', usernameVariable: 'USERNAME', passwordVariable: 'USERPASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'webserver_login', usernameVariable: 'deploy', passwordVariable: 'jenkins')]) {
                     sshPublisher(
                         failOnError: true,
                         continueOnError: false,
@@ -54,8 +54,8 @@ pipeline {
                             sshPublisherDesc(
                                 configName: 'production',
                                 sshCredentials: [
-                                    username: "$USERNAME",
-                                    encryptedPassphrase: "$USERPASS"
+                                    username: "deploy",
+                                    encryptedPassphrase: "jenkins"
                                 ], 
                                 transfers: [
                                     sshTransfer(
